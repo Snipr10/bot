@@ -35,11 +35,14 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['log'])
 def send_welcome(message):
-    try:
-        f = open("example.log", "rb")
-        bot.send_document(message.chat.id, f)
-    except Exception as e:
-        bot.reply_to(message, f'Попробуй позже')
+    if message.from_user.username == 'bongiozzo' or message.from_user.username == 'oleggsh':
+        try:
+            f = open("example.log", "rb")
+            bot.send_document(message.chat.id, f)
+        except Exception as e:
+            bot.reply_to(message, f'Попробуй позже')
+    else:
+        bot.reply_to(message, f'Нет доступа')
 
 
 @bot.message_handler(content_types=['text'])
