@@ -39,7 +39,7 @@ with open('test.csv', newline='') as File:
         this_last_name = delete_symbols(data_split[2])
         this_second_name = delete_symbols(data_split[3])
         this_DFB = delete_symbols(data_split[4])
-        this_Workplace = delete_symbols(data_split[5])
+        this_Workplace = re.sub('\[|]|\'', '', data_split[5])
         user.append(this_first_name)
         user.append(this_last_name)
         user.append(this_second_name)
