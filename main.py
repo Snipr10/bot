@@ -26,7 +26,7 @@ data_update = []
 
 def delete_symbols(line):
     if line is not None:
-        return re.sub('\[|\ |\'', '', line)
+        return re.sub('\[|]|\ |\'', '', line)
 
 
 with open('test.csv', newline='') as File:
