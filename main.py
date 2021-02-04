@@ -7,18 +7,55 @@ import re
 import telebot
 import datetime, xlrd
 import logging
+
 logging.basicConfig(filename='example.log', level=logging.INFO)
 
 bot = telebot.TeleBot('1615594110:AAGeoEWz34as6JKJMYVX4ZTLib7EBIBfscg')
+import csv
 
-rb = xlrd.open_workbook('test_serg.xls', formatting_info=True)
-sheet = rb.sheet_by_index(0)
-vals = [sheet.row_values(rownum) for rownum in range(sheet.nrows)]
-range_valses = range(1, len(vals) - 1)
+state = []
+first_name = []
+last_name = []
+second_name = []
+DFB = []
+Workplace = []
 data = []
-data.append("search")
-for i in range_valses:
-    data.append(vals[i][0] + " " + vals[i][1] + " " + vals[i][2] + " " + str(int(vals[i][5])))
+year = []
+data_update = []
+
+
+def delete_symbols(line):
+    if line is not None:
+        return re.sub('\[|\ |\'', '', line)
+
+
+with open('test.csv', newline='') as File:
+    reader = csv.reader(File)
+    for row in reader:
+        user = []
+        data_split = (str(row)).split(",")
+        this_state = delete_symbols(data_split[0])
+        this_first_name = delete_symbols(data_split[1])
+        this_last_name = delete_symbols(data_split[2])
+        this_second_name = delete_symbols(data_split[3])
+        this_DFB = delete_symbols(data_split[4])
+        this_Workplace = delete_symbols(data_split[5])
+        user.append(this_first_name)
+        user.append(this_last_name)
+        user.append(this_second_name)
+        d_year = ""
+        try:
+            d_year = this_DFB.split('.')[2]
+        except Exception:
+            pass
+        user.append(d_year)
+        user.append(this_DFB)
+        user.append(this_Workplace)
+        user.append(this_state)
+        data.append(user)
+
+range_valses = range(1, len(data) - 1)
+print("start")
 
 
 @bot.message_handler(commands=['start'])
@@ -49,12 +86,13 @@ def send_welcome(message):
 def get_text_messages(message):
     try:
         logging.info('usedid: {usedid} time: {time} message: {m}'.format(usedid=message.from_user.id,
-                                                                         time=datetime.datetime.now(), m=message.text))        # if message.from_user.id == 283126393 or message.from_user.username == "natolich23":
+                                                                         time=datetime.datetime.now(),
+                                                                         m=message.text))  # if message.from_user.id == 283126393 or message.from_user.username == "natolich23":
         message_name = message.text.lower()
         message_name_added = ''
         for i in range(0, len(message_name)):
             if message_name[i] == '*' and i > 0:
-                if message_name[i-1] != ' ':
+                if message_name[i - 1] != ' ':
                     message_name_added += ' '
             message_name_added += message_name[i]
             if message_name[i] == '*' and i < len(message_name) - 1:
@@ -63,30 +101,32 @@ def get_text_messages(message):
         message_name_added = re.sub(" +", " ", message_name_added)
 
         message_name_split = message_name_added.split(" ")
-        count = 0
         while (len(message_name_split) < 4):
             message_name_split.append("*")
-        first_found = 0
-        regular = ''
-        for i in range(0, len(message_name_split)):
-            if message_name_split[i] == '*':
-                first_found += 1
-                regular += '\w+\s'
+        first = 0
+        for datas in message_name_split:
+            if datas == "*":
+                first += 1
             else:
-                regular += message_name_split[i] + '\s'
+                break
         is_all = True
-        if first_found == 4:
-            max = 0
+        count = 0
+
+        if first == 4:
             for i in range_valses:
-                send_message_user(message, vals[i])
-                max += 1
-                if max == 10:
-                    break
+                if count < 10:
+                    send_message_user(message, i)
+                    count += 1
         else:
             for i in range_valses:
-                if len(re.findall(regular, data[i].lower()+' ')) == 1:
-                    count += 1
-                    send_message_user(message, vals[i])
+                if data[i][first].lower() == message_name_split[first]:
+                    check = True
+                    for k in range(first, len(message_name_split)):
+                        if message_name_split[k] != "*" and message_name_split[k] != data[i][k].lower():
+                            check = False
+                    if check:
+                        count += 1
+                        send_message_user(message, i)
                 # if count >= 10_000:
                 if count >= 5:
                     is_all = False
@@ -100,18 +140,17 @@ def get_text_messages(message):
         bot.send_message(message.chat.id, f'Что-то пошло не так')
 
 
-def send_message_user(message, val):
-    bot.send_message(message.chat.id,
-                     'Фамилия: {f} \nИмя: {n} \nОтчество: {s} \n\n{dob} \n\n{pof}'.format(f=val[0],
-                                                                                          n=val[1],
-                                                                                          s=val[2],
-                                                                                          dob=datetime.datetime(
-                                                                                              *xlrd.xldate_as_tuple(
-                                                                                                  val[3],
-                                                                                                  rb.datemode)).date().strftime(
-                                                                                              "%d.%m.%Y"),
-                                                                                          pof=val[4]))
-
+def send_message_user(message, i):
+    try:
+        bot.send_message(message.chat.id,
+                         'Фамилия: {f} \nИмя: {n} \nОтчество: {s} \nДата рождения: {dob} \nМесто работы: {pof} \nРайон: {state}'.format(f=data[i][0],
+                                                                                                          n=data[i][1],
+                                                                                                          s=data[i][2],
+                                                                                                          dob=data[i][4],
+                                                                                                          pof=data[i][5],
+                                                                                                          state=data[i][6]))
+    except Exception as e:
+        print(e)
 
 def print_hi(name):
     # открываем файл
