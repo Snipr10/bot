@@ -54,14 +54,17 @@ with open('prod.csv', newline='') as File:
 range_valses = range(1, len(data) - 1)
 print("start")
 
-white_list_username = ['bongiozzo', 'NikonovIgor', 'kazarin', 'oleggsh']
+white_list_username = ['bongiozzo', 'nikonovIgor', 'kazarin', 'oleggsh']
 white_list_id = [283126393, 415757631]
 
 
 def check_access(from_user):
-    if from_user.id in white_list_id or from_user.username in white_list_username:
-        return True
-    return False
+    try:
+        if from_user.id in white_list_id or from_user.username.lower() in white_list_username:
+            return True
+        return False
+    except Exception:
+        return False
 
 
 @bot.message_handler(commands=['start'])
