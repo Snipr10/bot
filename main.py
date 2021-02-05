@@ -54,8 +54,8 @@ with open('prod.csv', newline='') as File:
 range_valses = range(1, len(data) - 1)
 print("start")
 
-white_list_username = ['bongiozzo']
-white_list_id = [283126393, 415757631, 457180576]
+white_list_username = ['bongiozzo', 'NikonovIgor', 'kazarin', 'oleggsh']
+white_list_id = [283126393, 415757631]
 
 
 def check_access(from_user):
