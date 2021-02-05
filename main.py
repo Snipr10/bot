@@ -134,7 +134,7 @@ def get_text_messages(message):
             if count == 0:
                 bot.send_message(message.chat.id, f'Не могу найти такого юзера')
             if not is_all:
-                bot.send_message(message.chat.id, f'Выданны первые 5 записей, дополните критерии отбора')
+                bot.send_message(message.chat.id, f'Выданы первые 5 записей, дополните критерии отбора')
 
     except Exception as e:
         bot.send_message(message.chat.id, f'Что-то пошло не так')
