@@ -3,15 +3,14 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import re
-
 import telebot
-import datetime, xlrd
+import datetime
 import logging
+import csv
 
 logging.basicConfig(filename='example.log', level=logging.INFO)
 
 bot = telebot.TeleBot('1615594110:AAGeoEWz34as6JKJMYVX4ZTLib7EBIBfscg')
-import csv
 
 state = []
 first_name = []
@@ -34,15 +33,10 @@ with open('test.csv', newline='') as File:
     for row in reader:
         user = []
         data_split = (str(row)).split(",")
-        this_state = delete_symbols(data_split[0])
-        this_first_name = delete_symbols(data_split[1])
-        this_last_name = delete_symbols(data_split[2])
-        this_second_name = delete_symbols(data_split[3])
         this_DFB = delete_symbols(data_split[4])
-        this_Workplace = re.sub('\[|]|\'', '', data_split[5])
-        user.append(this_first_name)
-        user.append(this_last_name)
-        user.append(this_second_name)
+        user.append(delete_symbols(data_split[1]))
+        user.append(delete_symbols(data_split[2]))
+        user.append(delete_symbols(data_split[3]))
         d_year = ""
         try:
             d_year = this_DFB.split('.')[2]
@@ -50,8 +44,8 @@ with open('test.csv', newline='') as File:
             pass
         user.append(d_year)
         user.append(this_DFB)
-        user.append(this_Workplace)
-        user.append(this_state)
+        user.append(re.sub('\[|]|\'', '', data_split[5]))
+        user.append(delete_symbols(data_split[0]))
         data.append(user)
 
 range_valses = range(1, len(data) - 1)
@@ -85,9 +79,9 @@ def send_welcome(message):
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     try:
-        logging.info('usedid: {usedid} time: {time} message: {m}'.format(usedid=message.from_user.id,
+        logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
                                                                          time=datetime.datetime.now(),
-                                                                         m=message.text))  # if message.from_user.id == 283126393 or message.from_user.username == "natolich23":
+                                                                         m=message.text))
         message_name = message.text.lower()
         message_name_added = ''
         for i in range(0, len(message_name)):
@@ -101,7 +95,7 @@ def get_text_messages(message):
         message_name_added = re.sub(" +", " ", message_name_added)
 
         message_name_split = message_name_added.split(" ")
-        while (len(message_name_split) < 4):
+        while len(message_name_split) < 4:
             message_name_split.append("*")
         first = 0
         for datas in message_name_split:
@@ -122,12 +116,16 @@ def get_text_messages(message):
                 if data[i][first].lower() == message_name_split[first]:
                     check = True
                     for k in range(first, len(message_name_split)):
-                        if message_name_split[k] != "*" and message_name_split[k] != data[i][k].lower():
-                            check = False
+                        if message_name_split[k] != "*":
+                            if k != 3 or len(message_name_split[k]) == 4:
+                                t = k
+                            else:
+                                t = 4
+                            if message_name_split[k] != data[i][t].lower():
+                                    check = False
                     if check:
                         count += 1
                         send_message_user(message, i)
-                # if count >= 10_000:
                 if count >= 5:
                     is_all = False
                     break
