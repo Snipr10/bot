@@ -8,7 +8,7 @@ import datetime
 import logging
 import csv
 
-logging.basicConfig(filename='example.log', level=logging.INFO)
+logging.basicConfig(filename='prod.log', level=logging.INFO)
 
 bot = telebot.TeleBot('1615594110:AAGeoEWz34as6JKJMYVX4ZTLib7EBIBfscg')
 
@@ -28,25 +28,28 @@ def delete_symbols(line):
         return re.sub('\[|]|\ |\'', '', line)
 
 
-with open('test.csv', newline='') as File:
+with open('prod.csv', newline='') as File:
     reader = csv.reader(File)
     for row in reader:
-        user = []
-        data_split = (str(row)).split(",")
-        this_DFB = delete_symbols(data_split[4])
-        user.append(delete_symbols(data_split[1]))
-        user.append(delete_symbols(data_split[2]))
-        user.append(delete_symbols(data_split[3]))
-        d_year = ""
         try:
-            d_year = this_DFB.split('.')[2]
+            user = []
+            data_split = (str(row)).split(",")
+            this_DFB = delete_symbols(data_split[4])
+            user.append(delete_symbols(data_split[1]))
+            user.append(delete_symbols(data_split[2]))
+            user.append(delete_symbols(data_split[3]))
+            d_year = ""
+            try:
+                d_year = this_DFB.split('.')[2]
+            except Exception:
+                pass
+            user.append(d_year)
+            user.append(this_DFB)
+            user.append(re.sub('\[|]|\'', '', data_split[5]))
+            user.append(delete_symbols(data_split[0]))
+            data.append(user)
         except Exception:
-            pass
-        user.append(d_year)
-        user.append(this_DFB)
-        user.append(re.sub('\[|]|\'', '', data_split[5]))
-        user.append(delete_symbols(data_split[0]))
-        data.append(user)
+            print("Skip: " + str(row))
 
 range_valses = range(1, len(data) - 1)
 print("start")
@@ -68,7 +71,7 @@ def send_welcome(message):
 def send_welcome(message):
     if message.from_user.username == 'bongiozzo' or message.from_user.username == 'oleggsh':
         try:
-            f = open("example.log", "rb")
+            f = open("prod.log", "rb")
             bot.send_document(message.chat.id, f)
         except Exception as e:
             bot.reply_to(message, f'Попробуй позже')
