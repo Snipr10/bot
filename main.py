@@ -97,25 +97,29 @@ def get_text_messages(message):
         message_name_split = message_name_added.split(" ")
         while len(message_name_split) < 4:
             message_name_split.append("*")
-        first = 0
+        first_search = 0
         for datas in message_name_split:
             if datas == "*":
-                first += 1
+                first_search += 1
             else:
                 break
         is_all = True
         count = 0
 
-        if first == 4:
+        if first_search == 4:
             for i in range_valses:
                 if count < 10:
                     send_message_user(message, i)
                     count += 1
         else:
+            if first_search == 3:
+                first_message_data = 4
+            else:
+                first_message_data = first_search
             for i in range_valses:
-                if data[i][first].lower() == message_name_split[first]:
+                if data[i][first_message_data].lower() == message_name_split[first_search]:
                     check = True
-                    for k in range(first, len(message_name_split)):
+                    for k in range(first_search, len(message_name_split)):
                         if message_name_split[k] != "*":
                             if k != 3 or len(message_name_split[k]) == 4:
                                 t = k
