@@ -54,7 +54,7 @@ with open('prod.csv', newline='') as File:
 range_valses = range(1, len(data) - 1)
 print("start")
 
-white_list_username = ['bongiozzo', 'nikonovIgor', 'kazarin', 'oleggsh']
+white_list_username = ['bongiozzo', 'nikonovIgor', 'kazarin', 'oleggsh', 'segaunit']
 white_list_id = [283126393, 415757631]
 
 
