@@ -54,16 +54,31 @@ with open('prod.csv', newline='') as File:
 range_valses = range(1, len(data) - 1)
 print("start")
 
-white_list_username = ['bongiozzo', 'nikonovIgor', 'kazarin', 'oleggsh', 'segaunit', 'Alexsandra7082', 'Spbvladimir',
-                       'dmitry_11spb', 'PloxoeClovo', 'kupets78', 'iumironov93', 'profit878', 'dimmi_sh', 'MP_SPb',
-                       'anebog', 'TerekhovEA', 'sashasashabyk', 'vadpa', 'Deniskalm', 'Lex8405', 'Anna_Kuznezova_11',
-                       'mik_pro', 'Alex14redtown', 'BlackPirat3', 'simurden', 'operok', 'Ragnar']
-white_list_id = [283126393, 415757631]
+white_list_username_search = ['bongiozzo', 'nikonovIgor', 'kazarin', 'oleggsh', 'segaunit', 'Alexsandra7082',
+                              'Spbvladimir',
+                              'dmitry_11spb', 'PloxoeClovo', 'kupets78', 'iumironov93', 'profit878', 'dimmi_sh',
+                              'MP_SPb',
+                              'anebog', 'TerekhovEA', 'sashasashabyk', 'vadpa', 'Deniskalm', 'Lex8405',
+                              'Anna_Kuznezova_11',
+                              'mik_pro', 'Alex14redtown', 'BlackPirat3', 'simurden', 'operok', 'Ragnar']
+white_list_id_search = [283126393, 415757631]
+
+white_list_username_logs = ['bongiozzo', 'oleggsh']
+white_list_id_slogs = [283126393, 415757631]
 
 
-def check_access(from_user):
+def check_access_search(from_user):
     try:
-        if from_user.id in white_list_id or from_user.username.lower() in white_list_username:
+        if from_user.id in white_list_id_search or from_user.username.lower() in white_list_username_search:
+            return True
+        return False
+    except Exception:
+        return False
+
+
+def check_access_logs(from_user):
+    try:
+        if from_user.id in white_list_id_slogs or from_user.username.lower() in white_list_username_logs:
             return True
         return False
     except Exception:
@@ -72,7 +87,7 @@ def check_access(from_user):
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    if check_access(message.from_user):
+    if check_access_search(message.from_user):
         bot.reply_to(message, f'Я бот. Приятно познакомиться, {message.from_user.first_name}')
     else:
         bot.reply_to(message, f'Нет доступа')
@@ -80,15 +95,15 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['help'])
 def send_welcome(message):
-    if check_access(message.from_user):
-        bot.reply_to(message, f'Отправь мне фамилию, я верну данные')
+    if check_access_search(message.from_user):
+        bot.reply_to(message, f'Отправь мне фамилию, имя, отчество, дату рождения,  я верну данные')
     else:
         bot.reply_to(message, f'Нет доступа')
 
 
 @bot.message_handler(commands=['log'])
 def send_welcome(message):
-    if check_access(message.from_user):
+    if check_access_logs(message.from_user):
         try:
             f = open("prod.log", "rb")
             bot.send_document(message.chat.id, f)
@@ -100,7 +115,7 @@ def send_welcome(message):
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    if check_access(message.from_user):
+    if check_access_search(message.from_user):
         try:
             logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
                                                                                time=datetime.datetime.now(),
