@@ -88,7 +88,8 @@ def check_access_logs(from_user):
 
 def add_logs(message):
     try:
-        logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
+        logging.info('used_id: {used_id} username: {username} time: {time} message: {m}'.format(used_id=message.from_user.id,
+                                                                           username=message.from_user.username,
                                                                            time=datetime.datetime.now(),
                                                                            m=message.text))
     except Exception as e:
