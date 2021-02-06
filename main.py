@@ -54,13 +54,13 @@ with open('prod.csv', newline='') as File:
 range_valses = range(1, len(data) - 1)
 print("start")
 
-white_list_username_search = ['bongiozzo', 'nikonovIgor', 'kazarin', 'natolich23','oleggsh', 'segaunit', 'Alexsandra7082',
+white_list_username_search = ['bongiozzo', 'nikonovigor', 'kazarin', 'natolich23', 'oleggsh', 'segaunit', 'alexsandra7082',
                               'Spbvladimir',
-                              'dmitry_11spb', 'PloxoeClovo', 'kupets78', 'iumironov93', 'profit878', 'dimmi_sh',
+                              'dmitry_11spb', 'ploxoeclovo', 'kupets78', 'iumironov93', 'profit878', 'dimmi_sh',
                               'MP_SPb',
-                              'anebog', 'TerekhovEA', 'sashasashabyk', 'vadpa', 'Deniskalm', 'Lex8405',
-                              'Anna_Kuznezova_11',
-                              'mik_pro', 'Alex14redtown', 'BlackPirat3', 'simurden', 'operok', 'Ragnar']
+                              'anebog', 'terekhovea', 'sashasashabyk', 'vadpa', 'deniskalm', 'lex8405',
+                              'anna_kuznezova_11',
+                              'mik_pro', 'alex14redtown', 'blackpirat3', 'simurden', 'operok', 'ragnar']
 white_list_id_search = [283126393, 415757631]
 
 white_list_username_logs = ['bongiozzo', 'oleggsh']
@@ -69,7 +69,7 @@ white_list_id_slogs = [283126393, 415757631]
 
 def check_access_search(from_user):
     try:
-        if from_user.id in white_list_id_search or from_user.username.lower() in white_list_username_search:
+        if from_user.id in white_list_id_search or from_user.username.lower() in white_list_username_search or from_user.username in white_list_username_search:
             return True
         return False
     except Exception:
@@ -78,7 +78,7 @@ def check_access_search(from_user):
 
 def check_access_logs(from_user):
     try:
-        if from_user.id in white_list_id_slogs or from_user.username.lower() in white_list_username_logs:
+        if from_user.id in white_list_id_slogs or from_user.username.lower() in white_list_username_logs or from_user.username in white_list_username_logs:
             return True
         return False
     except Exception:
