@@ -54,7 +54,7 @@ with open('prod.csv', newline='') as File:
 range_valses = range(1, len(data) - 1)
 print("start")
 
-white_list_username_search = ['bongiozzo', 'nikonovIgor', 'kazarin', 'oleggsh', 'segaunit', 'Alexsandra7082',
+white_list_username_search = ['bongiozzo', 'nikonovIgor', 'kazarin', 'natolich23','oleggsh', 'segaunit', 'Alexsandra7082',
                               'Spbvladimir',
                               'dmitry_11spb', 'PloxoeClovo', 'kupets78', 'iumironov93', 'profit878', 'dimmi_sh',
                               'MP_SPb',
