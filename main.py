@@ -54,7 +54,8 @@ with open('prod.csv', newline='') as File:
 range_valses = range(1, len(data) - 1)
 print("start")
 
-white_list_username_search = ['bongiozzo', 'nikonovigor', 'kazarin', 'natolich23', 'oleggsh', 'segaunit', 'alexsandra7082',
+white_list_username_search = ['bongiozzo', 'nikonovigor', 'kazarin', 'natolich23', 'oleggsh', 'segaunit',
+                              'alexsandra7082',
                               'Spbvladimir',
                               'dmitry_11spb', 'ploxoeclovo', 'kupets78', 'iumironov93', 'profit878', 'dimmi_sh',
                               'MP_SPb',
@@ -85,15 +86,22 @@ def check_access_logs(from_user):
         return False
 
 
+def add_logs(message):
+    try:
+        logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
+                                                                           time=datetime.datetime.now(),
+                                                                           m=message.text))
+    except Exception as e:
+        print(e)
+
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     if check_access_search(message.from_user):
         bot.reply_to(message, f'Я бот. Приятно познакомиться, {message.from_user.first_name}')
     else:
         bot.reply_to(message, f'Нет доступа')
-    logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
-                                                                       time=datetime.datetime.now(),
-                                                                       m=message.text))
+    add_logs(message)
 
 
 @bot.message_handler(commands=['help'])
@@ -102,9 +110,7 @@ def send_welcome(message):
         bot.reply_to(message, f'Отправь мне фамилию, имя, отчество, дату рождения,  я верну данные')
     else:
         bot.reply_to(message, f'Нет доступа')
-    logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
-                                                                       time=datetime.datetime.now(),
-                                                                       m=message.text))
+    add_logs(message)
 
 
 @bot.message_handler(commands=['log'])
@@ -117,9 +123,7 @@ def send_welcome(message):
             bot.reply_to(message, f'Попробуй позже')
     else:
         bot.reply_to(message, f'Нет доступа')
-    logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
-                                                                       time=datetime.datetime.now(),
-                                                                       m=message.text))
+    add_logs(message)
 
 
 @bot.message_handler(content_types=['text'])
@@ -186,9 +190,7 @@ def get_text_messages(message):
             bot.send_message(message.chat.id, f'Что-то пошло не так')
     else:
         bot.reply_to(message, f'Нет доступа')
-    logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
-                                                                       time=datetime.datetime.now(),
-                                                                       m=message.text))
+    add_logs(message)
 
 
 def send_message_user(message, i):
