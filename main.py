@@ -91,6 +91,9 @@ def send_welcome(message):
         bot.reply_to(message, f'Я бот. Приятно познакомиться, {message.from_user.first_name}')
     else:
         bot.reply_to(message, f'Нет доступа')
+    logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
+                                                                       time=datetime.datetime.now(),
+                                                                       m=message.text))
 
 
 @bot.message_handler(commands=['help'])
@@ -99,6 +102,9 @@ def send_welcome(message):
         bot.reply_to(message, f'Отправь мне фамилию, имя, отчество, дату рождения,  я верну данные')
     else:
         bot.reply_to(message, f'Нет доступа')
+    logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
+                                                                       time=datetime.datetime.now(),
+                                                                       m=message.text))
 
 
 @bot.message_handler(commands=['log'])
@@ -111,15 +117,15 @@ def send_welcome(message):
             bot.reply_to(message, f'Попробуй позже')
     else:
         bot.reply_to(message, f'Нет доступа')
+    logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
+                                                                       time=datetime.datetime.now(),
+                                                                       m=message.text))
 
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     if check_access_search(message.from_user):
         try:
-            logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
-                                                                               time=datetime.datetime.now(),
-                                                                               m=message.text))
             message_name = message.text.lower()
             message_name_added = ''
             for i in range(0, len(message_name)):
@@ -180,6 +186,9 @@ def get_text_messages(message):
             bot.send_message(message.chat.id, f'Что-то пошло не так')
     else:
         bot.reply_to(message, f'Нет доступа')
+    logging.info('used_id: {used_id} time: {time} message: {m}'.format(used_id=message.from_user.id,
+                                                                       time=datetime.datetime.now(),
+                                                                       m=message.text))
 
 
 def send_message_user(message, i):
