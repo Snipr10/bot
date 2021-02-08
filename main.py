@@ -101,7 +101,7 @@ def send_activate(message):
     if check_access_logs_or_sleep(message.from_user):
         if is_sleep[0]:
             is_sleep[0] = False
-            bot.reply_to(message, f'Я просулся')
+            bot.reply_to(message, f'Я проснулся')
         else:
             bot.reply_to(message, f'Я не сплю')
     else:
