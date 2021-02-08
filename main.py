@@ -104,6 +104,9 @@ def send_activate(message):
             bot.reply_to(message, f'Я просулся')
         else:
             bot.reply_to(message, f'Я не сплю')
+    else:
+        bot.reply_to(message, f'Нет доступа')
+    add_logs(message)
 
 
 @bot.message_handler(commands=['deactivate'])
@@ -114,6 +117,9 @@ def send_deactivate(message):
             bot.reply_to(message, f'Я уснул')
         else:
             bot.reply_to(message, f'Я сплю')
+    else:
+        bot.reply_to(message, f'Нет доступа')
+    add_logs(message)
 
 
 @bot.message_handler(commands=['start'])
