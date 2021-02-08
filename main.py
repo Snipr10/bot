@@ -11,7 +11,6 @@ import csv
 logging.basicConfig(filename='prod.log', level=logging.INFO)
 
 bot = telebot.TeleBot('1615594110:AAGeoEWz34as6JKJMYVX4ZTLib7EBIBfscg')
-
 state = []
 first_name = []
 last_name = []
@@ -66,6 +65,7 @@ white_list_id_search = [283126393, 415757631]
 
 white_list_username_logs = ['bongiozzo', 'oleggsh']
 white_list_id_slogs = [283126393, 415757631]
+is_sleep = [False]
 
 
 def check_access_search(from_user):
@@ -77,7 +77,7 @@ def check_access_search(from_user):
         return False
 
 
-def check_access_logs(from_user):
+def check_access_logs_or_sleep(from_user):
     try:
         if from_user.id in white_list_id_slogs or from_user.username.lower() in white_list_username_logs or from_user.username in white_list_username_logs:
             return True
@@ -96,102 +96,126 @@ def add_logs(message):
         print(e)
 
 
+@bot.message_handler(commands=['activate'])
+def send_activate(message):
+    if check_access_logs_or_sleep(message.from_user):
+        if is_sleep[0]:
+            is_sleep[0] = False
+            bot.reply_to(message, f'Я просулся')
+        else:
+            bot.reply_to(message, f'Я не сплю')
+
+
+@bot.message_handler(commands=['deactivate'])
+def send_deactivate(message):
+    if check_access_logs_or_sleep(message.from_user):
+        if not is_sleep[0]:
+            is_sleep[0] = True
+            bot.reply_to(message, f'Я уснул')
+        else:
+            bot.reply_to(message, f'Я сплю')
+
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    if check_access_search(message.from_user):
-        bot.reply_to(message, f'Я бот. Приятно познакомиться, {message.from_user.first_name}')
-    else:
-        bot.reply_to(message, f'Нет доступа')
-    add_logs(message)
+    if not is_sleep[0]:
+        if check_access_search(message.from_user):
+            bot.reply_to(message, f'Я бот. Приятно познакомиться, {message.from_user.first_name}')
+        else:
+            bot.reply_to(message, f'Нет доступа')
+        add_logs(message)
 
 
 @bot.message_handler(commands=['help'])
 def send_welcome(message):
-    if check_access_search(message.from_user):
-        bot.reply_to(message, f'Отправь мне фамилию, имя, отчество, дату рождения,  я верну данные')
-    else:
-        bot.reply_to(message, f'Нет доступа')
-    add_logs(message)
+    if not is_sleep[0]:
+        if check_access_search(message.from_user):
+            bot.reply_to(message, f'Отправь мне фамилию, имя, отчество, дату рождения,  я верну данные')
+        else:
+            bot.reply_to(message, f'Нет доступа')
+        add_logs(message)
 
 
 @bot.message_handler(commands=['log'])
 def send_welcome(message):
-    if check_access_logs(message.from_user):
-        try:
-            f = open("prod.log", "rb")
-            bot.send_document(message.chat.id, f)
-        except Exception as e:
-            bot.reply_to(message, f'Попробуй позже')
-    else:
-        bot.reply_to(message, f'Нет доступа')
-    add_logs(message)
+    if not is_sleep[0]:
+        if check_access_logs_or_sleep(message.from_user):
+            try:
+                f = open("prod.log", "rb")
+                bot.send_document(message.chat.id, f)
+            except Exception as e:
+                bot.reply_to(message, f'Попробуй позже')
+        else:
+            bot.reply_to(message, f'Нет доступа')
+        add_logs(message)
 
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    if check_access_search(message.from_user):
-        try:
-            message_name = message.text.lower()
-            message_name_added = ''
-            for i in range(0, len(message_name)):
-                if message_name[i] == '*' and i > 0:
-                    if message_name[i - 1] != ' ':
-                        message_name_added += ' '
-                message_name_added += message_name[i]
-                if message_name[i] == '*' and i < len(message_name) - 1:
-                    if message_name[i + 1] != ' ':
-                        message_name_added += ' '
-            message_name_added = re.sub(" +", " ", message_name_added)
+    if not is_sleep[0]:
+        if check_access_search(message.from_user):
+            try:
+                message_name = message.text.lower()
+                message_name_added = ''
+                for i in range(0, len(message_name)):
+                    if message_name[i] == '*' and i > 0:
+                        if message_name[i - 1] != ' ':
+                            message_name_added += ' '
+                    message_name_added += message_name[i]
+                    if message_name[i] == '*' and i < len(message_name) - 1:
+                        if message_name[i + 1] != ' ':
+                            message_name_added += ' '
+                message_name_added = re.sub(" +", " ", message_name_added)
 
-            message_name_split = message_name_added.split(" ")
-            while len(message_name_split) < 4:
-                message_name_split.append("*")
-            first_search = 0
-            for datas in message_name_split:
-                if datas == "*":
-                    first_search += 1
-                else:
-                    break
-            is_all = True
-            count = 0
-
-            if first_search == 4:
-                for i in range_valses:
-                    if count < 10:
-                        send_message_user(message, i)
-                        count += 1
-            else:
-                if first_search == 3:
-                    first_message_data = 4
-                else:
-                    first_message_data = first_search
-                for i in range_valses:
-                    if data[i][first_message_data].lower() == message_name_split[first_search]:
-                        check = True
-                        for k in range(first_search, len(message_name_split)):
-                            if message_name_split[k] != "*":
-                                if k != 3 or len(message_name_split[k]) == 4:
-                                    t = k
-                                else:
-                                    t = 4
-                                if message_name_split[k] != data[i][t].lower():
-                                    check = False
-                        if check:
-                            count += 1
-                            send_message_user(message, i)
-                    if count >= 5:
-                        is_all = False
+                message_name_split = message_name_added.split(" ")
+                while len(message_name_split) < 4:
+                    message_name_split.append("*")
+                first_search = 0
+                for datas in message_name_split:
+                    if datas == "*":
+                        first_search += 1
+                    else:
                         break
-                if count == 0:
-                    bot.send_message(message.chat.id, f'Не могу найти такого юзера')
-                if not is_all:
-                    bot.send_message(message.chat.id, f'Выданы первые 5 записей, дополните критерии отбора')
+                is_all = True
+                count = 0
 
-        except Exception as e:
-            bot.send_message(message.chat.id, f'Что-то пошло не так')
-    else:
-        bot.reply_to(message, f'Нет доступа')
-    add_logs(message)
+                if first_search == 4:
+                    for i in range_valses:
+                        if count < 10:
+                            send_message_user(message, i)
+                            count += 1
+                else:
+                    if first_search == 3:
+                        first_message_data = 4
+                    else:
+                        first_message_data = first_search
+                    for i in range_valses:
+                        if data[i][first_message_data].lower() == message_name_split[first_search]:
+                            check = True
+                            for k in range(first_search, len(message_name_split)):
+                                if message_name_split[k] != "*":
+                                    if k != 3 or len(message_name_split[k]) == 4:
+                                        t = k
+                                    else:
+                                        t = 4
+                                    if message_name_split[k] != data[i][t].lower():
+                                        check = False
+                            if check:
+                                count += 1
+                                send_message_user(message, i)
+                        if count >= 5:
+                            is_all = False
+                            break
+                    if count == 0:
+                        bot.send_message(message.chat.id, f'Не могу найти такого юзера')
+                    if not is_all:
+                        bot.send_message(message.chat.id, f'Выданы первые 5 записей, дополните критерии отбора')
+
+            except Exception as e:
+                bot.send_message(message.chat.id, f'Что-то пошло не так')
+        else:
+            bot.reply_to(message, f'Нет доступа')
+        add_logs(message)
 
 
 def send_message_user(message, i):
